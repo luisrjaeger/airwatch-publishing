@@ -1,0 +1,64 @@
+plugins {
+    id 'com.gradle.plugin-publish' version '0.10.1'
+    id "luisrjaeger.android-auto-versioning" version "1.0.0"
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+    id 'groovy'
+}
+
+description 'Gradle plugin to publish apks to Airwatch Console API'
+group 'br.com.luisrjaeger'
+version androidVersion.versionName()
+ext.pluginId = 'luisrjaeger.airwatch-messaging'
+
+androidVersion {
+    versionCycle = 100
+    releaseNotesFileName = null
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'com.google.code.gson:gson:2.8.5'
+}
+
+gradlePlugin {
+    plugins {
+        airwatchPublishingPlugin {
+            id = project.pluginId
+            implementationClass = project.group + '.airwatch.AirwatchPublishingPlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/luisrjaeger'
+    vcsUrl = 'https://github.com/luisrjaeger/airwatch-publishing'
+    description = project.description
+    tags = ['airwatch', 'publishing', 'deploy']
+    plugins {
+        airwatchPublishingPlugin {
+            displayName = 'Airwatch Publishing'
+        }
+    }
+}
+
+publishing {
+    publications {
+        pluginPublication (MavenPublication) {
+            from        components.java
+            groupId     project.group
+            artifactId  project.name
+            version     project.version
+        }
+    }
+    repositories {
+        maven {
+            url mavenRepoUrl
+        }
+    }
+}
