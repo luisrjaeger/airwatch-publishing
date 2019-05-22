@@ -1,6 +1,6 @@
 plugins {
     id 'com.gradle.plugin-publish' version '0.10.1'
-    id "luisrjaeger.android-auto-versioning" version "1.0.0"
+    id "luisrjaeger.auto-versioning" version "1.0.3"
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'groovy'
@@ -8,10 +8,10 @@ plugins {
 
 description 'Gradle plugin to publish apks to Airwatch Console API'
 group 'br.com.luisrjaeger'
-version androidVersion.versionName()
-ext.pluginId = 'luisrjaeger.airwatch-messaging'
+version autoVersion.versionName()
+ext.pluginId = 'luisrjaeger.airwatch-publishing'
 
-androidVersion {
+autoVersion {
     versionCycle = 100
     releaseNotesFileName = null
 }
