@@ -1,6 +1,6 @@
 plugins {
     id 'com.gradle.plugin-publish' version '0.10.1'
-    id "luisrjaeger.auto-versioning" version "1.0.4"
+    id "luisrjaeger.auto-versioning" version "1.0.6"
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'groovy'
@@ -36,9 +36,7 @@ gradlePlugin {
     }
 }
 
-publishPlugins {
-    dependsOn increaseVersion
-}
+publishPlugins { dependsOn increaseVersion }
 
 pluginBundle {
     version = autoVersion.versionName()

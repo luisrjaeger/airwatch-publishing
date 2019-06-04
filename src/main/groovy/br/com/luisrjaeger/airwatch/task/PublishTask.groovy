@@ -2,8 +2,9 @@ package br.com.luisrjaeger.airwatch.task
 
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.BeginInstall
+import br.com.luisrjaeger.airwatch.model.response.BeginInstall as RespBeginInstall
+import br.com.luisrjaeger.airwatch.model.response.UploadBlob
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import org.gradle.api.DefaultTask
@@ -30,8 +31,6 @@ class PublishTask extends DefaultTask {
         .addInterceptor(buildInterceptor())
         .build()
 
-    //'Authorization: Basic YXBpYWRtaW46cmVubmVyQDEyMw==' 'aw-tenant-code: O2UkzdtEXxC+dIcDce6UjUHQeI++IFxLjcxSj0hKpa4=' 'Accept: application/json' 'Content-Type: application/octet-stream' --data-binary @remarcacao-dsv-2.6.2.3.apk http://awds.lojasrenner.com.br/api/mam/blobs/uploadblob?filename=remarcacao-dsv-2.6.2.3.apk"
-    //'Authorization: Basic YXBpYWRtaW46cmVubmVyQDEyMw==' 'aw-tenant-code: O2UkzdtEXxC+dIcDce6UjUHQeI++IFxLjcxSj0hKpa4=' 'Accept: application/json' 'Content-Type: application/json' -d '{\"FileName\": \"remarcacao-dsv-2.6.2.3.apk\", \"BlobId\": 81509, \"LocationGroupId\": 2103, \"ApplicationId\": \"br.com.lojasrenner.remarcacao.test\", \"DeviceType\": \"Android\", \"PushMode\": \"Auto\", \"AutoUpdateVersion\": false, \"ApplicationName\": \"RemarcacaoTeste\", \"SupportedModels\" : { \"Model\" : [{ \"ModelName\" : \"Android\" }] } }' http://awds.lojasrenner.com.br/api/mam/apps/internal/begininstall"
     PublishTask() { }
 
     @TaskAction
@@ -44,6 +43,7 @@ class PublishTask extends DefaultTask {
         if (!airwatch.password) throw new Exception("airwatch.password not defined and it's mandatory")
 
         println "Sending APK - ${airwatch.applicationName}"
+        println "**********************"
 
         loadApkFile()
 
@@ -51,47 +51,39 @@ class PublishTask extends DefaultTask {
 
         if (!blobId) throw new Exception("Unable to get blobId")
 
+        println "APK sent!"
+        println "**********************"
 
+        def id = postSave(blobId)
+
+        if (!id) throw new Exception("Unable to save application on Airwatch")
+
+        println "Application saved!"
+        println "**********************"
     }
 
     private Integer postApk() {
         def responseApk = okHttpClient.newCall(buildApkRequest()).execute()
-        def apkId
 
         if (!responseApk.successful) throw new Exception(responseApk.message())
 
-        def json = new JsonParser().parse(responseApk.body().string().toString()).getAsJsonObject()
-        apkId = json.get('Value').getAsInt()
-
-        println "**** RESPONSE APK ****"
-        println json
-        println apkId
-        println "******************"
-
+        UploadBlob uploadBlob = getResponse(responseApk, UploadBlob.class)
         responseApk.close()
 
-        return apkId
+        return uploadBlob.Value
     }
 
     private Integer postSave(Integer blobId) {
         beginInstall = loadBeginInstall()
         beginInstall.BlobId = blobId
-        def id
 
         def responseSave = okHttpClient.newCall(buildSaveRequest()).execute()
         if (!responseSave.successful) throw new Exception(responseSave.message())
 
-        def json = new JsonParser().parse(responseSave.body().string().toString()).getAsJsonObject()
-        id = json.get('Id').getAsInt()
-
-        println "**** RESPONSE SAVE ****"
-        println json
-        println id
-        println "******************"
-
+        RespBeginInstall rbi = getResponse(responseSave, RespBeginInstall.class)
         responseSave.close()
 
-        return id
+        return rbi.Id.Value
     }
 
     private BeginInstall loadBeginInstall() {
@@ -128,10 +120,7 @@ class PublishTask extends DefaultTask {
             .addHeader("Content-Type", "application/octet-stream")
             .addHeader("Authorization", "Basic ${buildBasicAuth()}")
             .addHeader("aw-tenant-code", "${airwatch.apiKey}")
-            .post(new MultipartBody.Builder()
-                .addFormDataPart("apk", file.name,
-                    RequestBody.create(MediaType.parse("application/octet-stream"), file))
-                .build()
+            .post(RequestBody.create(MediaType.parse("application/octet-stream"), file)
             ).build()
     }
 
@@ -154,12 +143,16 @@ class PublishTask extends DefaultTask {
         def interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             void log(String message) {
-                println "HTTP LOG - $message"
+                if (message.startsWith("{")) println "HTTP BODY LOG - $message"
             }
         })
         interceptor.level = HttpLoggingInterceptor.Level.BODY
 
         return interceptor
+    }
+
+    private static <T> T getResponse(Response response, Class<T> clazz) {
+        return (T) new Gson().fromJson(response.body().string().toString(), clazz)
     }
 
 }

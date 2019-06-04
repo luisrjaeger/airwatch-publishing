@@ -2,6 +2,12 @@ package br.com.luisrjaeger.airwatch.model
 
 class SupportedModels {
 
-    Model Model = new Model()
+    List<Model> Model = [new Model()]
+
+    private class Model {
+
+        String ModelName = "Android"
+
+    }
 
 }

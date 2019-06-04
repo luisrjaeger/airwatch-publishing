@@ -6,7 +6,7 @@ class BeginInstall {
 
     public Integer BlobId
 
-    //public Integer LocationGroup
+    //public Integer LocationGroupId = 2103
 
     public String ApplicationId
 
@@ -14,7 +14,7 @@ class BeginInstall {
 
     public String PushMode
 
-    public String AutoUpdateVersion = false
+    public boolean AutoUpdateVersion = false
 
     public String ApplicationName
 
