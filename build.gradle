@@ -1,15 +1,14 @@
 plugins {
     id 'com.gradle.plugin-publish' version '0.10.1'
-    id "luisrjaeger.auto-versioning" version "1.0.3"
+    id "luisrjaeger.auto-versioning" version "1.0.4"
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'groovy'
 }
 
 description 'Gradle plugin to publish apks to Airwatch Console API'
-group 'br.com.luisrjaeger'
-version autoVersion.versionName()
 ext.pluginId = 'luisrjaeger.airwatch-publishing'
+group 'br.com.luisrjaeger'
 
 autoVersion {
     versionCycle = 100
@@ -24,6 +23,8 @@ dependencies {
     implementation gradleApi()
     implementation localGroovy()
     implementation 'com.google.code.gson:gson:2.8.5'
+    implementation "com.squareup.okhttp3:okhttp:3.11.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:3.11.0"
 }
 
 gradlePlugin {
@@ -35,7 +36,12 @@ gradlePlugin {
     }
 }
 
+publishPlugins {
+    dependsOn increaseVersion
+}
+
 pluginBundle {
+    version = autoVersion.versionName()
     website = 'https://github.com/luisrjaeger'
     vcsUrl = 'https://github.com/luisrjaeger/airwatch-publishing'
     description = project.description

@@ -2,9 +2,7 @@ package br.com.luisrjaeger.airwatch.model
 
 class Airwatch {
 
-    transient String serverUrl
-
-    String filePath
+    String serverUrl
 
     String applicationName
 
@@ -14,11 +12,14 @@ class Airwatch {
 
     String password
 
-    //TODO: Validate
-    String organizationGroup
+    String pushMode = "Auto"
 
-    String pushMode
+    OrganizationGroup organizationGroup = new OrganizationGroup()
 
-    String bundleId
+    def organizationGroup(Closure closure) {
+        closure.resolveStrategy = Closure.DELEGATE_FIRST
+        closure.delegate = organizationGroup
+        closure()
+    }
 
 }
