@@ -6,7 +6,7 @@ class BeginInstall {
 
     public Integer BlobId
 
-    //public Integer LocationGroupId = 2103
+    public Integer LocationGroupId
 
     public String ApplicationId
 

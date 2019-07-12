@@ -35,7 +35,6 @@ class PublishTask extends DefaultTask {
 
     @TaskAction
     def postToAirwatch() {
-
         if (!airwatch.applicationName) throw new Exception("airwatch.applicationName not defined and it's mandatory")
         if (!airwatch.serverUrl) throw new Exception("airwatch.serverUrl not defined and it's mandatory")
         if (!airwatch.apiKey) throw new Exception("airwatch.apiKey not defined and it's mandatory")
@@ -92,6 +91,7 @@ class PublishTask extends DefaultTask {
         begin.ApplicationName = airwatch.applicationName
         begin.FileName = file.name
         begin.PushMode = airwatch.pushMode
+        begin.LocationGroupId = airwatch.organizationGroup ? airwatch.organizationGroup.id : null
 
         return begin
     }
@@ -115,7 +115,7 @@ class PublishTask extends DefaultTask {
 
     private Request buildApkRequest() {
         return new Request.Builder()
-            .url("${airwatch.serverUrl}api/mam/blobs/uploadblob?filename=${file.name}")
+            .url("${airwatch.serverUrl}api/mam/blobs/uploadblob?filename=${file.name}") //organizationGroupId
             .addHeader("Accept", "application/json")
             .addHeader("Content-Type", "application/octet-stream")
             .addHeader("Authorization", "Basic ${buildBasicAuth()}")

@@ -2,7 +2,7 @@ package br.com.luisrjaeger.airwatch.model
 
 class OrganizationGroup {
 
-    String id
+    Integer id
 
     String name
 
