@@ -40,7 +40,7 @@ gradlePlugin {
 
 pluginBundle {
     version = autoVersion.versionName()
-    website = 'https://github.com/luisrjaeger'
+    website = 'https://github.com/luisrjaeger/airwatch-publishing-readme'
     vcsUrl = 'https://github.com/luisrjaeger/airwatch-publishing'
     description = project.description
     tags = ['airwatch', 'publishing', 'deploy']
