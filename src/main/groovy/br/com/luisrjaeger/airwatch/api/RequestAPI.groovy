@@ -24,7 +24,7 @@ class RequestAPI {
         .connectTimeout(60, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(60, TimeUnit.SECONDS)
-        .addInterceptor(buildInterceptor())
+        //.addInterceptor(buildInterceptor())
         .build()
 
     RequestAPI(String serverUrl, String apiKey, String userName, String password) {

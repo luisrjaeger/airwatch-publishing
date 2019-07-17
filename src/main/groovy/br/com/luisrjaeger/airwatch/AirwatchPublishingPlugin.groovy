@@ -19,7 +19,7 @@ class AirwatchPublishingPlugin implements Plugin<Project> {
                 project.tasks.create("publish${variant.name.capitalize()}ToAirwatch", PublishTask) { task ->
                     task.filePath = outputFile.absolutePath.replace(outputFile.name, "")
                     task.bundleId = variant.applicationId
-                    task.version = android.defaultConfig.versionCode
+                    task.version = android.defaultConfig.versionName
                     task.airwatch = extension
 
                     group 'publishing airwatch'
