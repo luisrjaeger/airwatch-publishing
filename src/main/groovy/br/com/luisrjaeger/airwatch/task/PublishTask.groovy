@@ -1,16 +1,15 @@
 package br.com.luisrjaeger.airwatch.task
 
+import br.com.luisrjaeger.airwatch.api.RequestAPI
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.BeginInstall
 import br.com.luisrjaeger.airwatch.model.response.BeginInstall as RespBeginInstall
+import br.com.luisrjaeger.airwatch.model.response.Search
 import br.com.luisrjaeger.airwatch.model.response.UploadBlob
 import com.google.gson.Gson
-import okhttp3.*
-import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.Response
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-
-import java.util.concurrent.TimeUnit
 
 class PublishTask extends DefaultTask {
 
@@ -20,16 +19,13 @@ class PublishTask extends DefaultTask {
 
     String bundleId
 
+    String version
+
     File file
 
     BeginInstall beginInstall
 
-    private okHttpClient = new OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(60, TimeUnit.SECONDS)
-        .addInterceptor(buildInterceptor())
-        .build()
+    RequestAPI requestAPI
 
     PublishTask() { }
 
@@ -41,10 +37,15 @@ class PublishTask extends DefaultTask {
         if (!airwatch.userName) throw new Exception("airwatch.userName not defined and it's mandatory")
         if (!airwatch.password) throw new Exception("airwatch.password not defined and it's mandatory")
 
-        println "Sending APK - ${airwatch.applicationName}"
+        requestAPI = new RequestAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
+
+        println "Searching Bundle - $bundleId - Version $version"
         println "**********************"
 
-        loadApkFile()
+        if (getExistingApplication()) throw new Exception("Bundle $bundleId version $version already present on AirWatch")
+
+        println "Sending APK - ${airwatch.applicationName}"
+        println "**********************"
 
         def blobId = postApk()
 
@@ -61,8 +62,20 @@ class PublishTask extends DefaultTask {
         println "**********************"
     }
 
+    private boolean getExistingApplication() {
+        def responseSearch = requestAPI.searchApplication(bundleId)
+
+        if (!responseSearch.successful) throw new Exception(responseSearch.message())
+
+        List<Search.Application> apps = getResponse(responseSearch, Search.class).Application
+
+        return apps.any { it.AppVersion == version }
+    }
+
     private Integer postApk() {
-        def responseApk = okHttpClient.newCall(buildApkRequest()).execute()
+        loadApkFile()
+
+        def responseApk = requestAPI.sendApk(file)
 
         if (!responseApk.successful) throw new Exception(responseApk.message())
 
@@ -76,7 +89,7 @@ class PublishTask extends DefaultTask {
         beginInstall = loadBeginInstall()
         beginInstall.BlobId = blobId
 
-        def responseSave = okHttpClient.newCall(buildSaveRequest()).execute()
+        def responseSave = requestAPI.saveApplication(beginInstall)
         if (!responseSave.successful) throw new Exception(responseSave.message())
 
         RespBeginInstall rbi = getResponse(responseSave, RespBeginInstall.class)
@@ -91,7 +104,7 @@ class PublishTask extends DefaultTask {
         begin.ApplicationName = airwatch.applicationName
         begin.FileName = file.name
         begin.PushMode = airwatch.pushMode
-        begin.LocationGroupId = airwatch.organizationGroup ? airwatch.organizationGroup.id : null
+        begin.LocationGroupId = airwatch.organizationGroupId
 
         return begin
     }
@@ -107,48 +120,6 @@ class PublishTask extends DefaultTask {
         if (file == null) throw new Exception("APK not Found")
 
         println "File name - ${file.name}"
-    }
-
-    private String buildBasicAuth() {
-        return "${airwatch.userName}:${airwatch.password}".bytes.encodeBase64()
-    }
-
-    private Request buildApkRequest() {
-        return new Request.Builder()
-            .url("${airwatch.serverUrl}api/mam/blobs/uploadblob?filename=${file.name}") //organizationGroupId
-            .addHeader("Accept", "application/json")
-            .addHeader("Content-Type", "application/octet-stream")
-            .addHeader("Authorization", "Basic ${buildBasicAuth()}")
-            .addHeader("aw-tenant-code", "${airwatch.apiKey}")
-            .post(RequestBody.create(MediaType.parse("application/octet-stream"), file)
-            ).build()
-    }
-
-    private Request buildSaveRequest() {
-        return new Request.Builder()
-            .url("${airwatch.serverUrl}api/mam/apps/internal/begininstall")
-            .addHeader("Accept", "application/json")
-            .addHeader("Content-Type", "application/json")
-            .addHeader("Authorization", "Basic ${buildBasicAuth()}")
-            .addHeader("aw-tenant-code", "${airwatch.apiKey}")
-            .post(
-                RequestBody.create(
-                    MediaType.parse("application/json"),
-                    new Gson().toJson(beginInstall)
-                )
-            ).build()
-    }
-
-    private static HttpLoggingInterceptor buildInterceptor() {
-        def interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-            @Override
-            void log(String message) {
-                if (message.startsWith("{")) println "HTTP BODY LOG - $message"
-            }
-        })
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        return interceptor
     }
 
     private static <T> T getResponse(Response response, Class<T> clazz) {

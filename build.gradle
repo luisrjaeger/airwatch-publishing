@@ -36,7 +36,7 @@ gradlePlugin {
     }
 }
 
-publishPlugins { dependsOn increaseVersion }
+//publishPlugins { dependsOn increaseVersion }
 
 pluginBundle {
     version = autoVersion.versionName()

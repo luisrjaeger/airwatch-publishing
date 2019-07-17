@@ -14,12 +14,6 @@ class Airwatch {
 
     String pushMode = "Auto"
 
-    OrganizationGroup organizationGroup = new OrganizationGroup()
-
-    def organizationGroup(Closure closure) {
-        closure.resolveStrategy = Closure.DELEGATE_FIRST
-        closure.delegate = organizationGroup
-        closure()
-    }
+    Integer organizationGroupId
 
 }
