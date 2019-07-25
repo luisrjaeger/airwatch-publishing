@@ -5,9 +5,20 @@ class Search {
     public List<Application> Application
 
     class Application {
+
+        Id Id
+
+        public String Uuid
+
         public String ApplicationName
+
         public String BundleId
+
         public String AppVersion
+
+        Integer getId() {
+            return Id.Value
+        }
     }
 
 }

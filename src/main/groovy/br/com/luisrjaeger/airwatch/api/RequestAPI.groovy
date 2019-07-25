@@ -1,11 +1,18 @@
 package br.com.luisrjaeger.airwatch.api
 
 import br.com.luisrjaeger.airwatch.model.BeginInstall
+import br.com.luisrjaeger.airwatch.model.DeviceStatus
+import br.com.luisrjaeger.airwatch.model.InstallApplication
+import br.com.luisrjaeger.airwatch.model.response.BeginInstall as RespBeginInstall
+import br.com.luisrjaeger.airwatch.model.response.Search
+import br.com.luisrjaeger.airwatch.model.response.SearchDevice
+import br.com.luisrjaeger.airwatch.model.response.UploadBlob
 import com.google.gson.Gson
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 
 import java.util.concurrent.TimeUnit
@@ -34,21 +41,35 @@ class RequestAPI {
         this.password = password
     }
 
-    def searchApplication(String bundleId) {
-        return okHttpClient.newCall(buildSearchRequest(bundleId)).execute()
+    Search searchApplication(String bundleId) {
+        return runRequest(buildSearchRequest(bundleId), Search.class)
     }
 
-    def sendApk(File file) {
-        return okHttpClient.newCall(buildApkRequest(file)).execute()
+    UploadBlob sendApk(File file) {
+        return runRequest(buildApkRequest(file), UploadBlob.class)
     }
 
-    def saveApplication(BeginInstall beginInstall) {
-        return okHttpClient.newCall(buildSaveRequest(beginInstall)).execute()
+    RespBeginInstall saveApplication(BeginInstall beginInstall) {
+        return runRequest(buildSaveRequest(beginInstall), RespBeginInstall.class)
+    }
+
+    SearchDevice searchDevice(Integer applicationId, DeviceStatus status) {
+        return runRequest(buildSearchDevices(applicationId, status), SearchDevice.class)
+    }
+
+    boolean installAppOnDevice(InstallApplication install) {
+        return runRequest(buildInstallOnDevice(install)).successful
     }
 
     private Request buildSearchRequest(String bundleId) {
         return buildHeader()
-            .url("${serverUrl}api/mam/apps/search?bundleid=${bundleId}")
+            .url("${serverUrl}api/mam/apps/search?bundleid=$bundleId&pagesize=3000")
+            .get().build()
+    }
+
+    private Request buildSearchDevices(Integer applicationId, DeviceStatus status) {
+        return buildHeader()
+            .url("${serverUrl}api/mam/apps/internal/$applicationId/devices?status=$status&pagesize=3000")
             .get().build()
     }
 
@@ -69,6 +90,27 @@ class RequestAPI {
             ).build()
     }
 
+    private Request buildInstallOnDevice(InstallApplication install) {
+        return buildHeader()
+            .url("${serverUrl}api/mam/apps/internal/${install.applicationId}/install")
+            .post(
+                RequestBody.create(
+                    MediaType.parse("application/json"),
+                    new Gson().toJson(install)
+                )
+            ).build()
+    }
+
+    private Response runRequest(Request request) {
+        return okHttpClient.newCall(request).execute()
+    }
+
+    private <T> T runRequest(Request request, Class<T> clazz) {
+        def response = runRequest(request)
+        if (!response.successful) throw new Exception(response.message())
+        return getResponse(response, clazz)
+    }
+
     private Request.Builder buildHeader() {
         return new Request.Builder()
             .addHeader("Accept", "application/json")
@@ -87,6 +129,10 @@ class RequestAPI {
         interceptor.level = HttpLoggingInterceptor.Level.BODY
 
         return interceptor
+    }
+
+    private static <T> T getResponse(Response response, Class<T> clazz) {
+        return (T) new Gson().fromJson(response.body().string().toString(), clazz)
     }
 
     private String buildBasicAuth() {

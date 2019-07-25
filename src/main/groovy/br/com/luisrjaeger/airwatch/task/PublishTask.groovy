@@ -6,8 +6,6 @@ import br.com.luisrjaeger.airwatch.model.BeginInstall
 import br.com.luisrjaeger.airwatch.model.response.BeginInstall as RespBeginInstall
 import br.com.luisrjaeger.airwatch.model.response.Search
 import br.com.luisrjaeger.airwatch.model.response.UploadBlob
-import com.google.gson.Gson
-import okhttp3.Response
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -63,24 +61,13 @@ class PublishTask extends DefaultTask {
     }
 
     private boolean getExistingApplication() {
-        def responseSearch = requestAPI.searchApplication(bundleId)
-
-        if (!responseSearch.successful) throw new Exception(responseSearch.message())
-
-        List<Search.Application> apps = getResponse(responseSearch, Search.class).Application
-
-        return apps.any { it.AppVersion == version }
+        List<Search.Application> apps = requestAPI.searchApplication(bundleId)?.Application
+        return apps?.any { it.AppVersion == version }
     }
 
     private Integer postApk() {
         loadApkFile()
-
-        def responseApk = requestAPI.sendApk(file)
-
-        if (!responseApk.successful) throw new Exception(responseApk.message())
-
-        UploadBlob uploadBlob = getResponse(responseApk, UploadBlob.class)
-        responseApk.close()
+        UploadBlob uploadBlob = requestAPI.sendApk(file)
 
         return uploadBlob.Value
     }
@@ -89,11 +76,7 @@ class PublishTask extends DefaultTask {
         beginInstall = loadBeginInstall()
         beginInstall.BlobId = blobId
 
-        def responseSave = requestAPI.saveApplication(beginInstall)
-        if (!responseSave.successful) throw new Exception(responseSave.message())
-
-        RespBeginInstall rbi = getResponse(responseSave, RespBeginInstall.class)
-        responseSave.close()
+        RespBeginInstall rbi = requestAPI.saveApplication(beginInstall)
 
         return rbi.Id.Value
     }
@@ -120,10 +103,6 @@ class PublishTask extends DefaultTask {
         if (file == null) throw new Exception("APK not Found")
 
         println "File name - ${file.name}"
-    }
-
-    private static <T> T getResponse(Response response, Class<T> clazz) {
-        return (T) new Gson().fromJson(response.body().string().toString(), clazz)
     }
 
 }

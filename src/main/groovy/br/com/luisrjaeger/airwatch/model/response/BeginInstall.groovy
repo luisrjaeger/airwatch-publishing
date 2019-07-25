@@ -2,6 +2,10 @@ package br.com.luisrjaeger.airwatch.model.response
 
 class BeginInstall {
 
+    public Id Id
+
+    String Uuid
+
     String ApplicationName
 
     String BundleId
@@ -35,13 +39,5 @@ class BeginInstall {
     Boolean IsDependencyFile
 
     Integer ContentGatewayId
-
-    public Id Id
-
-    String Uuid
-
-    class Id {
-        public Integer Value
-    }
 
 }
