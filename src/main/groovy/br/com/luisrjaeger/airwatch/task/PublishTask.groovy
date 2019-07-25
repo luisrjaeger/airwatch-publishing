@@ -13,8 +13,6 @@ class PublishTask extends DefaultTask {
 
     Airwatch airwatch
 
-    String filePath
-
     String bundleId
 
     String version
@@ -93,9 +91,9 @@ class PublishTask extends DefaultTask {
     }
 
     private void loadApkFile() {
-        println "File Path - ${filePath}"
+        println "File Path - ${airwatch.filePath}"
 
-        def directory = new File(filePath)
+        def directory = new File(airwatch.filePath)
         file = directory.listFiles().find {
             it.name.contains(".apk")
         }

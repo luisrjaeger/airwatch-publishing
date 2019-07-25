@@ -6,6 +6,8 @@ class Airwatch {
 
     String applicationName
 
+    String filePath
+
     String apiKey
 
     String userName
