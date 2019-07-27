@@ -52,7 +52,7 @@ class ValidateInstallationTask extends DefaultTask {
 
             devices -= devicesInstalled
 
-            println "Were found ${devices.size()} devices without application installed."
+            println "Were found ${devices.size()} devices without application installed"
             println devices
 
             if (devices.isEmpty()) {
@@ -66,7 +66,7 @@ class ValidateInstallationTask extends DefaultTask {
             println ""
 
             for (def deviceId : devices) {
-                sendInstalltion(app.id, deviceId)
+                sendInstallation(app.id, deviceId)
             }
 
             println "**********************"
@@ -88,20 +88,20 @@ class ValidateInstallationTask extends DefaultTask {
 
         println ""
         println "${search?.Total} devices found!"
-        println ""
         println "$list"
         println ""
 
         return list
     }
 
-    private sendInstalltion(Integer appId, Integer deviceId) {
+    private sendInstallation(Integer appId, Integer deviceId) {
         println "Sending installation to device $deviceId"
         if (requestAPI.installAppOnDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
             println "DONE!"
         } else {
             println "FAILURE!"
         }
+        println ""
     }
 
 }
