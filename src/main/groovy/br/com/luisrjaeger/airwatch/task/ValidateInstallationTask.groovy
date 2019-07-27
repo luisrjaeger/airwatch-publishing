@@ -46,20 +46,17 @@ class ValidateInstallationTask extends DefaultTask {
 
         for (def app : apps) {
             println "**********************"
-            println "Searching Devices with applicationId ${app.id} assigned"
 
-            def devices = searchDevicesWith(app.getId(), DeviceStatus.Assigned)
+            def devices = searchDevicesWith(app.id, DeviceStatus.Assigned)
+            def devicesInstalled = searchDevicesWith(app.id, DeviceStatus.Installed)
 
-            println "Searching Devices with applicationId ${app.id} installed"
-
-            def devicesInstalled = searchDevicesWith(app.getId(), DeviceStatus.Installed)
-
-            devices.removeAll(devicesInstalled)
+            devices -= devicesInstalled
 
             println "Were found ${devices.size()} devices without application installed."
+            println devices
 
             if (devices.isEmpty()) {
-                println "No pending installation found for ${app.getId()}!"
+                println "No pending installation found for ${app.id}!"
                 println "**********************"
                 continue
             }
@@ -85,13 +82,17 @@ class ValidateInstallationTask extends DefaultTask {
     }
 
     private List<Integer> searchDevicesWith(Integer applicationId, DeviceStatus status) {
+        println "Searching Devices with applicationId $applicationId $status"
         SearchDevice search = requestAPI.searchDevice(applicationId, status)
+        def list = search?.DeviceId ?: [ ]
 
         println ""
-        println "${search.Total} devices found!"
+        println "${search?.Total} devices found!"
+        println ""
+        println "$list"
         println ""
 
-        return search?.DevicesId ?: [ ]
+        return list
     }
 
     private sendInstalltion(Integer appId, Integer deviceId) {
