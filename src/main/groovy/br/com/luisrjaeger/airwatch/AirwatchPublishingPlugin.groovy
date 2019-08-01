@@ -19,8 +19,8 @@ class AirwatchPublishingPlugin implements Plugin<Project> {
             variant.outputs.all {
                 project.tasks.create("publish${variant.name.capitalize()}ToAirwatch", PublishTask) { task ->
                     //Workaround until Google fix outputFile deprecated api call
-                    //extension.filePath = extension.filePath ?: outputFile.absolutePath.replace(outputFile.name, "")
-                    extension.filePath = extension.filePath ?:
+                    //task.filePath = extension.filePath ?: outputFile.absolutePath.replace(outputFile.name, "")
+                    task.filePath = extension.filePath ?:
                         variant.getPackageApplicationProvider().get().outputs.files[1]
                     task.bundleId = variant.applicationId
                     task.version = android.defaultConfig.versionName

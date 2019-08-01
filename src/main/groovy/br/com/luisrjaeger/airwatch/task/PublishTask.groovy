@@ -19,6 +19,8 @@ class PublishTask extends DefaultTask {
 
     File file
 
+    String filePath
+
     BeginInstall beginInstall
 
     RequestAPI requestAPI
@@ -91,9 +93,9 @@ class PublishTask extends DefaultTask {
     }
 
     private void loadApkFile() {
-        println "File Path - ${airwatch.filePath}"
+        println "File Path - ${filePath}"
 
-        def directory = new File(airwatch.filePath)
+        def directory = new File(filePath)
         file = directory.listFiles().find {
             it.name.contains(".apk")
         }
