@@ -87,7 +87,7 @@ class ValidateInstallationTask extends DefaultTask {
         def list = search?.DeviceId ?: [ ]
 
         println ""
-        println "${search?.Total} devices found!"
+        println "${search?.Total ?: 0} devices found!"
         println "$list"
         println ""
 
