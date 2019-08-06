@@ -62,7 +62,7 @@ class ValidateInstallationTask extends DefaultTask {
             }
 
             println ""
-            println "Stating installation..."
+            println "Starting installation..."
             println ""
 
             for (def deviceId : devices) {
