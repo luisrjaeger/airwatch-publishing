@@ -18,4 +18,6 @@ class Airwatch {
 
     Integer organizationGroupId
 
+    Boolean validateVersionOnPublishing = true
+
 }

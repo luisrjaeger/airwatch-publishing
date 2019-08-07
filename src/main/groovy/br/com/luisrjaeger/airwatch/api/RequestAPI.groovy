@@ -107,7 +107,7 @@ class RequestAPI {
 
     private <T> T runRequest(Request request, Class<T> clazz) {
         def response = runRequest(request)
-        if (!response.successful) throw new Exception(response.message())
+        if (!response.successful) throw new Exception("${response.message()} - ${response.body()}")
         return getResponse(response, clazz)
     }
 

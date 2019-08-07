@@ -49,8 +49,10 @@ class PublishTask extends DefaultTask {
 
         if (!blobId) throw new Exception("Unable to get blobId")
 
-        println "APK sent!"
+        println "APK file $blobId sent!"
         println "**********************"
+
+        println "Saving application..."
 
         def id = postSave(blobId)
 
@@ -61,6 +63,7 @@ class PublishTask extends DefaultTask {
     }
 
     private boolean getExistingApplication() {
+        if (!airwatch.validateVersionOnPublishing) return false
         List<Search.Application> apps = requestAPI.searchApplication(bundleId)?.Application
         return apps?.any { it.AppVersion == version }
     }
