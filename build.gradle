@@ -51,18 +51,18 @@ pluginBundle {
     }
 }
 
-publishing {
-    publications {
-        pluginPublication (MavenPublication) {
-            from        components.java
-            groupId     project.group
-            artifactId  project.name
-            version     project.version
-        }
-    }
-    repositories {
-        maven {
-            url mavenRepoUrl
-        }
-    }
-}
+//publishing {
+//    publications {
+//        pluginPublication (MavenPublication) {
+//            from        components.java
+//            groupId     project.group
+//            artifactId  project.name
+//            version     project.version
+//        }
+//    }
+//    repositories {
+//        maven {
+//            url mavenRepoUrl
+//        }
+//    }
+//}
