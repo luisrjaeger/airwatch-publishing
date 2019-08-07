@@ -3,7 +3,7 @@ Airwatch plugin for Gradle
 
 # Usage
 Airwatch plugin for Gradle to upload and deploy Android apks on Airwatch Console API.
-It creates `publishing airwatch` task group, task `publish...ToAirwatch` and `validate...Installation` for each build variant.
+It creates `publishing airwatch` task group and tasks `publish...ToAirwatch` and `validate...Installation` for each build variant.
 
 ```
 buildscript {
