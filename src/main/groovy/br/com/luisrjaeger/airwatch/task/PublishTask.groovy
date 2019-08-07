@@ -37,9 +37,6 @@ class PublishTask extends DefaultTask {
 
         requestAPI = new RequestAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
 
-        println "Searching Bundle - $bundleId - Version $version"
-        println "**********************"
-
         if (getExistingApplication()) throw new Exception("Bundle $bundleId version $version already present on AirWatch")
 
         println "Sending APK - ${airwatch.applicationName}"
@@ -64,6 +61,10 @@ class PublishTask extends DefaultTask {
 
     private boolean getExistingApplication() {
         if (!airwatch.validateVersionOnPublishing) return false
+
+        println "Searching Bundle - $bundleId - Version $version"
+        println "**********************"
+
         List<Search.Application> apps = requestAPI.searchApplication(bundleId)?.Application
         return apps?.any { it.AppVersion == version }
     }
