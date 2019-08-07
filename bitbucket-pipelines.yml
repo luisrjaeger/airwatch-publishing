@@ -9,4 +9,4 @@ pipelines:
   default:
     - step:
         script:
-          - ./gradlew increaseVersion
+          - ./gradlew increaseVersion -Pgradle.publish.key=$publishKey -Pgradle.publish.secret=$publishSecret
