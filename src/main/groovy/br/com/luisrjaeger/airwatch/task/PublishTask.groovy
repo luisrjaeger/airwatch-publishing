@@ -60,6 +60,7 @@ class PublishTask extends DefaultTask {
     }
 
     private boolean getExistingApplication() {
+        println "Validate version? ${airwatch.validateVersionOnPublishing}"
         if (!airwatch.validateVersionOnPublishing) return false
 
         println "Searching Bundle - $bundleId - Version $version"
