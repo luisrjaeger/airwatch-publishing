@@ -6,7 +6,9 @@
 image: atlassian/default-image:2
 
 pipelines:
-  default:
-    - step:
-        script:
-          - ./gradlew increaseVersion -Pgradle.publish.key=$publishKey -Pgradle.publish.secret=$publishSecret
+  branches:
+    master:
+      - step:
+          script:
+            # - ./gradlew increaseVersion
+            - ./gradlew publishPlugins -Pgradle.publish.key=$publishKey -Pgradle.publish.secret=$publishSecret
