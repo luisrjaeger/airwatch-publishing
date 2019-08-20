@@ -55,9 +55,6 @@ class UninstallOlderTask extends DefaultTask {
                 continue
             }
 
-            println "Were found ${devices.size()} devices with this old application installed"
-            println devices
-
             println ""
             println "Starting uninstall..."
             println ""
