@@ -42,7 +42,7 @@ class AirwatchPublishingPlugin implements Plugin<Project> {
 
                 project.tasks.create("uninstallOlder${variant.name.capitalize()}", UninstallOlderTask) { task ->
                     task.bundleId = variant.applicationId
-                    task.version = project.property('airwatch.keepVersion') ?: android.defaultConfig.versionName
+                    task.version = project.findProperty('airwatch.keepVersion') ?: android.defaultConfig.versionName
                     task.airwatch = extension
 
                     group 'publishing airwatch'
