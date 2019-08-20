@@ -67,13 +67,13 @@ class RequestAPI {
 
     private Request buildSearchRequest(String bundleId) {
         return buildHeader()
-            .url("${serverUrl}api/mam/apps/search?bundleid=$bundleId&pagesize=3000")
+            .url("${serverUrl}api/mam/apps/search?bundleid=$bundleId&pagesize=10000")
             .get().build()
     }
 
     private Request buildSearchDevices(Integer applicationId, DeviceStatus status) {
         return buildHeader()
-            .url("${serverUrl}api/mam/apps/internal/$applicationId/devices?status=$status&pagesize=3000")
+            .url("${serverUrl}api/mam/apps/internal/$applicationId/devices?status=$status&pagesize=10000")
             .get().build()
     }
 
