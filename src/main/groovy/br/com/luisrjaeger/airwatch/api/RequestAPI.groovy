@@ -58,7 +58,11 @@ class RequestAPI {
     }
 
     boolean installAppOnDevice(InstallApplication install) {
-        return runRequest(buildInstallOnDevice(install)).successful
+        return runRequest(buildInstallUninstallOnDevice(install)).successful
+    }
+
+    boolean uninstallAppFromDevice(InstallApplication install) {
+        return runRequest(buildInstallUninstallOnDevice(install, false)).successful
     }
 
     private Request buildSearchRequest(String bundleId) {
@@ -90,9 +94,9 @@ class RequestAPI {
             ).build()
     }
 
-    private Request buildInstallOnDevice(InstallApplication install) {
+    private Request buildInstallUninstallOnDevice(InstallApplication install, boolean cmdInstall = true) {
         return buildHeader()
-            .url("${serverUrl}api/mam/apps/internal/${install.applicationId}/install")
+            .url("${serverUrl}api/mam/apps/internal/${install.applicationId}/${ cmdInstall ? 'install' : 'uninstall' }")
             .post(
                 RequestBody.create(
                     MediaType.parse("application/json"),

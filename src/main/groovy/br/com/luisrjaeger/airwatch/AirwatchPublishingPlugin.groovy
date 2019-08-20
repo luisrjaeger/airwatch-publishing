@@ -2,6 +2,7 @@ package br.com.luisrjaeger.airwatch
 
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.task.PublishTask
+import br.com.luisrjaeger.airwatch.task.UninstallOlderTask
 import br.com.luisrjaeger.airwatch.task.ValidateInstallationTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,6 +38,15 @@ class AirwatchPublishingPlugin implements Plugin<Project> {
 
                     group 'publishing airwatch'
                     description "Validate ${variant.name} apk deployment on devices and force installation"
+                }
+
+                project.tasks.create("uninstallOlder${variant.name.capitalize()}", UninstallOlderTask) { task ->
+                    task.bundleId = variant.applicationId
+                    task.version = project.airwatch.keepVersion ?: android.defaultConfig.versionName
+                    task.airwatch = extension
+
+                    group 'publishing airwatch'
+                    description "Uninstall ${variant.name} older versions from devices"
                 }
             }
         }
