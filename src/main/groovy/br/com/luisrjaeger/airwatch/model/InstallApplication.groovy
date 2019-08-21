@@ -4,7 +4,7 @@ class InstallApplication {
 
     transient Integer applicationId
 
-    Integer DeviceId
+    transient Integer DeviceId
 
     String Uuid
 

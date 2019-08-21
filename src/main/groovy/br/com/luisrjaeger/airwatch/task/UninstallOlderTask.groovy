@@ -59,9 +59,10 @@ class UninstallOlderTask extends DefaultTask {
             println "Starting uninstall..."
             println ""
 
-            for (def deviceId : devices) {
-                sendUninstall(app.id, deviceId)
-            }
+//            for (def deviceId : devices) {
+//                sendUninstall(app.id, deviceId)
+//            }
+            sendUninstall(app.id, 0)
 
             println "**********************"
         }

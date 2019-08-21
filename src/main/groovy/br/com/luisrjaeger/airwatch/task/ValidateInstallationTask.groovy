@@ -65,9 +65,10 @@ class ValidateInstallationTask extends DefaultTask {
             println "Starting installation..."
             println ""
 
-            for (def deviceId : devices) {
-                sendInstallation(app.id, deviceId)
-            }
+//            for (def deviceId : devices) {
+//                sendInstallation(app.id, deviceId)
+//            }
+            sendInstallation(app.id, 0)
 
             println "**********************"
         }
