@@ -60,10 +60,9 @@ class UninstallOlderTask extends DefaultTask {
             println "Starting uninstall..."
             println ""
 
-//            for (def deviceId : devices) {
-//                sendUninstall(app.id, deviceId)
-//            }
-            sendUninstall(app.id)
+            for (def deviceId : devices) {
+                sendUninstall(app.id, deviceId)
+            }
 
             println "**********************"
         }
@@ -96,11 +95,10 @@ class UninstallOlderTask extends DefaultTask {
     private sendUninstall(Integer appId, Integer deviceId = null) {
         println "Sending uninstall to device $deviceId"
         if (requestAPI.uninstallAppFromDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
-            println "DONE!"
+            print "$deviceId "
         } else {
-            println "FAILURE!"
+            print "$deviceId(FAILURE) "
         }
-        println ""
     }
 
 }

@@ -100,11 +100,10 @@ class ValidateInstallationTask extends DefaultTask {
 
     private sendInstallation(Integer appId, Integer deviceId) {
         if (requestAPI.installAppOnDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
-            println "$deviceId - DONE!"
+            print "$deviceId "
         } else {
-            println "$deviceId - FAILURE!"
+            print "$deviceId(FAILURE) "
         }
-        println ""
     }
 
 }
