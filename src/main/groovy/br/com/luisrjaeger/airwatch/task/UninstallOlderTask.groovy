@@ -63,7 +63,7 @@ class UninstallOlderTask extends DefaultTask {
 //            for (def deviceId : devices) {
 //                sendUninstall(app.id, deviceId)
 //            }
-            sendUninstall(app.id, 0)
+            sendUninstall(app.id)
 
             println "**********************"
         }
@@ -93,7 +93,7 @@ class UninstallOlderTask extends DefaultTask {
         return list
     }
 
-    private sendUninstall(Integer appId, Integer deviceId) {
+    private sendUninstall(Integer appId, Integer deviceId = null) {
         println "Sending uninstall to device $deviceId"
         if (requestAPI.uninstallAppFromDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
             println "DONE!"

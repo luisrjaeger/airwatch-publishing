@@ -5,7 +5,6 @@ import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.BeginInstall
 import br.com.luisrjaeger.airwatch.model.response.BeginInstall as RespBeginInstall
-import br.com.luisrjaeger.airwatch.model.response.Search
 import br.com.luisrjaeger.airwatch.model.response.UploadBlob
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -67,11 +66,11 @@ class PublishTask extends DefaultTask {
         println "Searching Bundle - $bundleId - Version $version"
         println "**********************"
 
-        return !AppFilterHelper.filterVersion(
+        return AppFilterHelper.existVersion(
             requestAPI.searchApplication(bundleId)?.Application,
             version,
             airwatch.organizationGroupId
-        ).isEmpty()
+        )
     }
 
     private Integer postApk() {
