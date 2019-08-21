@@ -1,6 +1,7 @@
 package br.com.luisrjaeger.airwatch.task
 
 import br.com.luisrjaeger.airwatch.api.RequestAPI
+import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.DeviceStatus
 import br.com.luisrjaeger.airwatch.model.InstallApplication
@@ -65,10 +66,9 @@ class ValidateInstallationTask extends DefaultTask {
             println "Starting installation..."
             println ""
 
-//            for (def deviceId : devices) {
-//                sendInstallation(app.id, deviceId)
-//            }
-            sendInstallation(app.id, 0)
+            for (def deviceId : devices) {
+                sendInstallation(app.id, deviceId)
+            }
 
             println "**********************"
         }
@@ -78,8 +78,11 @@ class ValidateInstallationTask extends DefaultTask {
     }
 
     private List<Search.Application> getExistingApplications() {
-        List<Search.Application> apps = requestAPI.searchApplication(bundleId)?.Application
-        return apps?.findAll { it.AppVersion == version } ?: [ ]
+        return AppFilterHelper.filterVersion(
+            requestAPI.searchApplication(bundleId)?.Application,
+            version,
+            airwatch.organizationGroupId
+        )
     }
 
     private List<Integer> searchDevicesWith(Integer applicationId, DeviceStatus status) {

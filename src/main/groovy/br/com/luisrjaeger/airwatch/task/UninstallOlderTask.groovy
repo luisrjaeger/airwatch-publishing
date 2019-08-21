@@ -1,6 +1,7 @@
 package br.com.luisrjaeger.airwatch.task
 
 import br.com.luisrjaeger.airwatch.api.RequestAPI
+import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.DeviceStatus
 import br.com.luisrjaeger.airwatch.model.InstallApplication
@@ -67,13 +68,16 @@ class UninstallOlderTask extends DefaultTask {
             println "**********************"
         }
 
-        println "Uninstall succeeded!"
+        println "Uninstall command succeeded!"
         println "**********************"
     }
 
     private List<Search.Application> getExistingApplications() {
-        List<Search.Application> apps = requestAPI.searchApplication(bundleId)?.Application
-        return apps?.findAll { it.AppVersion != version } ?: [ ]
+        return AppFilterHelper.filterVersion(
+            requestAPI.searchApplication(bundleId)?.Application,
+            version,
+            airwatch.organizationGroupId
+        )
     }
 
     private List<Integer> searchDevicesWith(Integer applicationId, DeviceStatus status) {

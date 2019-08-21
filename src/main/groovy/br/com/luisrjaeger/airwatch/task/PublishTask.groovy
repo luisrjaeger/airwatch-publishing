@@ -1,6 +1,7 @@
 package br.com.luisrjaeger.airwatch.task
 
 import br.com.luisrjaeger.airwatch.api.RequestAPI
+import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.BeginInstall
 import br.com.luisrjaeger.airwatch.model.response.BeginInstall as RespBeginInstall
@@ -66,8 +67,11 @@ class PublishTask extends DefaultTask {
         println "Searching Bundle - $bundleId - Version $version"
         println "**********************"
 
-        List<Search.Application> apps = requestAPI.searchApplication(bundleId)?.Application
-        return apps?.any { it.AppVersion == version }
+        return !AppFilterHelper.filterVersion(
+            requestAPI.searchApplication(bundleId)?.Application,
+            version,
+            airwatch.organizationGroupId
+        ).isEmpty()
     }
 
     private Integer postApk() {

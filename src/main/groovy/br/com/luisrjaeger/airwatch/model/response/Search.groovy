@@ -16,6 +16,8 @@ class Search {
 
         public String AppVersion
 
+        public Integer LocationGroupId
+
         Integer getId() {
             return Id.Value
         }
