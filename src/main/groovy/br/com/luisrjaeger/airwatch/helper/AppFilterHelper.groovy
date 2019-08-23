@@ -4,8 +4,12 @@ import br.com.luisrjaeger.airwatch.model.response.Search
 
 class AppFilterHelper {
 
+    static List<Search.Application> filterBundle(List<Search.Application> apps, Integer groupId) {
+        return apps?.findAll { it.LocationGroupId == groupId } ?: [ ]
+    }
+
     static List<Search.Application> filterVersion(List<Search.Application> apps, String version, Integer groupId) {
-        return apps?.findAll { it.AppVersion == version && it.LocationGroupId == groupId } ?: [ ]
+        return filterBundle(apps, groupId).findAll { it.AppVersion == version }
     }
 
     static boolean existVersion(List<Search.Application> apps, String version, Integer groupId) {

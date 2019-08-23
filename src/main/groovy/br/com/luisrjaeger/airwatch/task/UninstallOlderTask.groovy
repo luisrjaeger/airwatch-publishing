@@ -72,9 +72,8 @@ class UninstallOlderTask extends DefaultTask {
     }
 
     private List<Search.Application> getExistingApplications() {
-        return AppFilterHelper.filterVersion(
+        return AppFilterHelper.filterBundle(
             requestAPI.searchApplication(bundleId)?.Application,
-            version,
             airwatch.organizationGroupId
         )
     }
