@@ -48,6 +48,7 @@ class UninstallOlderTask extends DefaultTask {
         for (def app : apps) {
             println "**********************"
 
+            println "Searching Devices with applicationId ${app.id} - ${app.AppVersion} ${DeviceStatus.Installed}"
             def devices = searchDevicesWith(app.id, DeviceStatus.Installed)
 
             if (devices.isEmpty()) {
@@ -79,7 +80,6 @@ class UninstallOlderTask extends DefaultTask {
     }
 
     private List<Integer> searchDevicesWith(Integer applicationId, DeviceStatus status) {
-        println "Searching Devices with applicationId $applicationId $status"
         SearchDevice search = requestAPI.searchDevice(applicationId, status)
         def list = search?.DeviceId ?: [ ]
 
