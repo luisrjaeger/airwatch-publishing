@@ -92,7 +92,6 @@ class UninstallOlderTask extends DefaultTask {
     }
 
     private sendUninstall(Integer appId, Integer deviceId = null) {
-        println "Sending uninstall to device $deviceId"
         if (requestAPI.uninstallAppFromDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
             print "$deviceId "
         } else {
