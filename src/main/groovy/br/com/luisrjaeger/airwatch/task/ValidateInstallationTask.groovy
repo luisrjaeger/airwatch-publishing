@@ -70,6 +70,7 @@ class ValidateInstallationTask extends DefaultTask {
                 sendInstallation(app.id, deviceId)
             }
 
+            println ""
             println "**********************"
         }
 

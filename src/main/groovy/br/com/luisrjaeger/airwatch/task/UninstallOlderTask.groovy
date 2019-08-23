@@ -65,6 +65,7 @@ class UninstallOlderTask extends DefaultTask {
                 sendUninstall(app.id, deviceId)
             }
 
+            println ""
             println "**********************"
         }
 
