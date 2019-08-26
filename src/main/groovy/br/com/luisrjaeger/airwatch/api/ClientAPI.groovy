@@ -17,7 +17,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 import java.util.concurrent.TimeUnit
 
-class RequestAPI {
+class ClientAPI {
 
     private String serverUrl
 
@@ -34,7 +34,7 @@ class RequestAPI {
         //.addInterceptor(buildInterceptor())
         .build()
 
-    RequestAPI(String serverUrl, String apiKey, String userName, String password) {
+    ClientAPI(String serverUrl, String apiKey, String userName, String password) {
         this.serverUrl = serverUrl
         this.apiKey = apiKey
         this.userName = userName
@@ -65,45 +65,55 @@ class RequestAPI {
         return runRequest(buildInstallUninstallOnDevice(install, false)).successful
     }
 
+
+
     private Request buildSearchRequest(String bundleId) {
-        return buildHeader()
-            .url("${serverUrl}api/mam/apps/search?bundleid=$bundleId&pagesize=10000")
-            .get().build()
+        return buildGet(Endpoint.APPS_SEARCH, bundleId)
     }
 
     private Request buildSearchDevices(Integer applicationId, DeviceStatus status) {
-        return buildHeader()
-            .url("${serverUrl}api/mam/apps/internal/$applicationId/devices?status=$status&pagesize=10000")
-            .get().build()
+        return buildGet(Endpoint.DEVICES_ID, applicationId, status)
     }
 
     private Request buildApkRequest(File file) {
-        return buildHeader()
-            .url("${serverUrl}api/mam/blobs/uploadblob?filename=${file.name}") //could send organizationGroupId??
-            .post(RequestBody.create(MediaType.parse("application/octet-stream"), file)).build()
+        return buildStreamPost(file, Endpoint.UPLOAD_BLOB, file.name)
     }
 
     private Request buildSaveRequest(BeginInstall beginInstall) {
-        return buildHeader()
-            .url("${serverUrl}api/mam/apps/internal/begininstall")
-            .post(
-                RequestBody.create(
-                    MediaType.parse("application/json"),
-                    new Gson().toJson(beginInstall)
-                )
-            ).build()
+        return buildPost(beginInstall, Endpoint.BEGIN_INSTALL)
     }
 
     private Request buildInstallUninstallOnDevice(InstallApplication install, boolean cmdInstall = true) {
-        return buildHeader()
-            .url("${serverUrl}api/mam/apps/internal/${install.applicationId}/${ cmdInstall ? 'install' : 'uninstall' }")
-            .post(
-                RequestBody.create(
-                    MediaType.parse("application/json"),
-                    new Gson().toJson(install)
-                )
-            ).build()
+        return buildPost(install, Endpoint.INSTALL_UNINSTALL, install.applicationId, cmdInstall ? 'install' : 'uninstall')
     }
+
+
+
+
+
+
+    Request buildGet(String endpoint, Object... args) {
+        return buildUrl(endpoint, args).get().build()
+    }
+
+    Request buildDelete(String endpoint, Object... args) {
+        return buildUrl(endpoint, args).delete().build()
+    }
+
+    public <T> Request buildPut(T body, String endpoint, Object... args) {
+        return buildUrl(endpoint, args).put(buildBody(body)).build()
+    }
+
+    public <T> Request buildPost(T body, String endpoint, Object... args) {
+        return buildUrl(endpoint, args).post(buildBody(body)).build()
+    }
+
+    Request buildStreamPost(File file, String endpoint, Object... args) {
+        return buildUrl(endpoint, args).post(buildStreamBody(file)).build()
+    }
+
+
+
 
     private Response runRequest(Request request) {
         return okHttpClient.newCall(request).execute()
@@ -113,6 +123,18 @@ class RequestAPI {
         def response = runRequest(request)
         if (!response.successful) throw new Exception("${response.message()} - ${response.body().string()}")
         return getResponse(response, clazz)
+    }
+
+    private static <T> RequestBody buildBody(T body) {
+        return RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(body))
+    }
+
+    private static RequestBody buildStreamBody(File file) {
+        return RequestBody.create(MediaType.parse("application/octet-stream"), file)
+    }
+
+    private Request.Builder buildUrl(String endpoint, Object... args) {
+        return buildHeader().url("${serverUrl}${String.format(endpoint, args)}")
     }
 
     private Request.Builder buildHeader() {

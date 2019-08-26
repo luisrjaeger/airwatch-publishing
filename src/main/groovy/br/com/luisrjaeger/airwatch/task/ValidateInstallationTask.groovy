@@ -1,6 +1,6 @@
 package br.com.luisrjaeger.airwatch.task
 
-import br.com.luisrjaeger.airwatch.api.RequestAPI
+import br.com.luisrjaeger.airwatch.api.ClientAPI
 import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.DeviceStatus
@@ -18,7 +18,7 @@ class ValidateInstallationTask extends DefaultTask {
 
     String version
 
-    RequestAPI requestAPI
+    ClientAPI requestAPI
 
     ValidateInstallationTask() { }
 
@@ -26,7 +26,7 @@ class ValidateInstallationTask extends DefaultTask {
     def validateInstallation() {
         airwatch.validateOptions()
 
-        requestAPI = new RequestAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
+        requestAPI = new ClientAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
 
         println "Searching Bundle - $bundleId - Version $version"
         println "**********************"
