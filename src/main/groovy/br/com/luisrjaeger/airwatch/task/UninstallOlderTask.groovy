@@ -24,10 +24,7 @@ class UninstallOlderTask extends DefaultTask {
 
     @TaskAction
     def validateInstallation() {
-        if (!airwatch.serverUrl) throw new Exception("airwatch.serverUrl not defined and it's mandatory")
-        if (!airwatch.apiKey) throw new Exception("airwatch.apiKey not defined and it's mandatory")
-        if (!airwatch.userName) throw new Exception("airwatch.userName not defined and it's mandatory")
-        if (!airwatch.password) throw new Exception("airwatch.password not defined and it's mandatory")
+        airwatch.validateOptions()
 
         requestAPI = new RequestAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
 

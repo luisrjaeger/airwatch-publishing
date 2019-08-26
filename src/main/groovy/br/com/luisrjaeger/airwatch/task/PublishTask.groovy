@@ -2,6 +2,7 @@ package br.com.luisrjaeger.airwatch.task
 
 import br.com.luisrjaeger.airwatch.api.RequestAPI
 import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
+
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.BeginInstall
 import br.com.luisrjaeger.airwatch.model.response.BeginInstall as RespBeginInstall
@@ -29,11 +30,7 @@ class PublishTask extends DefaultTask {
 
     @TaskAction
     def postToAirwatch() {
-        if (!airwatch.applicationName) throw new Exception("airwatch.applicationName not defined and it's mandatory")
-        if (!airwatch.serverUrl) throw new Exception("airwatch.serverUrl not defined and it's mandatory")
-        if (!airwatch.apiKey) throw new Exception("airwatch.apiKey not defined and it's mandatory")
-        if (!airwatch.userName) throw new Exception("airwatch.userName not defined and it's mandatory")
-        if (!airwatch.password) throw new Exception("airwatch.password not defined and it's mandatory")
+        airwatch.validateOptions()
 
         requestAPI = new RequestAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
 
