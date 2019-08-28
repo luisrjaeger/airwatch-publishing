@@ -75,7 +75,7 @@ class PublishTask extends DefaultTask {
 
     private Integer postApk() {
         loadApkFile()
-        UploadBlob uploadBlob = requestAPI.sendApk(file)
+        UploadBlob uploadBlob = requestAPI.sendApk(file, airwatch.organizationGroupId)
 
         return uploadBlob.Value
     }

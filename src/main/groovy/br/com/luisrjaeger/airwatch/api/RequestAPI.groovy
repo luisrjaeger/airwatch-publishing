@@ -45,8 +45,8 @@ class RequestAPI {
         return runRequest(buildSearchRequest(bundleId), Search.class)
     }
 
-    UploadBlob sendApk(File file) {
-        return runRequest(buildApkRequest(file), UploadBlob.class)
+    UploadBlob sendApk(File file, Integer organizationGroupId) {
+        return runRequest(buildApkRequest(file, organizationGroupId), UploadBlob.class)
     }
 
     RespBeginInstall saveApplication(BeginInstall beginInstall) {
@@ -77,9 +77,9 @@ class RequestAPI {
             .get().build()
     }
 
-    private Request buildApkRequest(File file) {
+    private Request buildApkRequest(File file, Integer organizationGroupId) {
         return buildHeader()
-            .url("${serverUrl}api/mam/blobs/uploadblob?filename=${file.name}") //could send organizationGroupId??
+            .url("${serverUrl}api/mam/blobs/uploadblob?organizationgroupid=$organizationGroupId") //could send organizationGroupId??
             .post(RequestBody.create(MediaType.parse("application/octet-stream"), file)).build()
     }
 
