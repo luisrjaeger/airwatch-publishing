@@ -12,5 +12,7 @@ jobs:
     
     steps:
     - name: Run increase version
-      run: ./gradlew build
+      run: 
+        - ls
+        - gradle build
       shell: bash
