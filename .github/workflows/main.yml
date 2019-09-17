@@ -12,6 +12,8 @@ jobs:
     
     steps:
     - name: Run increase version
+      working-directory: /
       run: |
-        pwd
+        sh 'pwd'
+        ./gradlew
       shell: bash
