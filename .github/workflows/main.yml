@@ -8,9 +8,12 @@ on: [pull_request]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     
     steps:
     - name: Run increase version
-      run: ls
+      run: |
+        ls
+        cd ..
+        ls
       shell: bash
