@@ -11,8 +11,8 @@ jobs:
     runs-on: macOS-latest
     
     steps:
-    - name: Run increase version
-      run: |
-        sh 'pwd'
-        ./gradlew
-      shell: bash
+      - name: Hello world
+        run: pwd
+        id: hello
+      - name: Echo the greeting's time
+        run: echo 'Testing ${{ steps.hello.outputs }}.'
