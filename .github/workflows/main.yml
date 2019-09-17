@@ -1,6 +1,6 @@
 name: Auto Versioning
 
-on: [push]
+on: [pull_request]
 #  push:
 #    paths:
 #     - 'src/main/groovy/br/com/luisrjaeger/airwatch/**'
@@ -12,4 +12,4 @@ jobs:
     
     steps:
     - name: Run increase version
-      run: gradle clean
+      run: gradlew build
