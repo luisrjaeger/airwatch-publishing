@@ -1,6 +1,6 @@
 package br.com.luisrjaeger.airwatch.task
 
-import br.com.luisrjaeger.airwatch.api.ClientAPI
+import br.com.luisrjaeger.airwatch.api.AirwatchAPI
 import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.DeviceStatus
@@ -18,7 +18,7 @@ class ValidateInstallationTask extends DefaultTask {
 
     String version
 
-    ClientAPI requestAPI
+    AirwatchAPI api
 
     ValidateInstallationTask() { }
 
@@ -26,7 +26,7 @@ class ValidateInstallationTask extends DefaultTask {
     def validateInstallation() {
         airwatch.validateOptions()
 
-        requestAPI = new ClientAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
+        api = new AirwatchAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
 
         println "Searching Bundle - $bundleId - Version $version"
         println "**********************"
@@ -77,7 +77,7 @@ class ValidateInstallationTask extends DefaultTask {
 
     private List<Search.Application> getExistingApplications() {
         return AppFilterHelper.filterVersion(
-            requestAPI.searchApplication(bundleId)?.Application,
+            api.searchApplication(bundleId)?.Application,
             version,
             airwatch.organizationGroupId
         )
@@ -85,7 +85,7 @@ class ValidateInstallationTask extends DefaultTask {
 
     private List<Integer> searchDevicesWith(Integer applicationId, DeviceStatus status) {
         println "Searching Devices with applicationId $applicationId $status"
-        SearchDevice search = requestAPI.searchDevice(applicationId, status)
+        SearchDevice search = api.searchDevice(applicationId, status)
         def list = search?.DeviceId ?: [ ]
 
         println ""
@@ -97,7 +97,7 @@ class ValidateInstallationTask extends DefaultTask {
     }
 
     private sendInstallation(Integer appId, Integer deviceId) {
-        if (requestAPI.installAppOnDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
+        if (api.installAppOnDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
             print "$deviceId "
         } else {
             print "$deviceId(FAILURE) "

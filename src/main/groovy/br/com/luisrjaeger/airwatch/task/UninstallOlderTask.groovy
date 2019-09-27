@@ -1,6 +1,6 @@
 package br.com.luisrjaeger.airwatch.task
 
-import br.com.luisrjaeger.airwatch.api.ClientAPI
+import br.com.luisrjaeger.airwatch.api.AirwatchAPI
 import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.DeviceStatus
@@ -18,7 +18,7 @@ class UninstallOlderTask extends DefaultTask {
 
     String version
 
-    ClientAPI requestAPI
+    AirwatchAPI api
 
     UninstallOlderTask() { }
 
@@ -26,7 +26,7 @@ class UninstallOlderTask extends DefaultTask {
     def validateInstallation() {
         airwatch.validateOptions()
 
-        requestAPI = new ClientAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
+        api = new AirwatchAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
 
         println "Searching Bundle - $bundleId - Keeping Version $version"
         println "**********************"
@@ -72,13 +72,13 @@ class UninstallOlderTask extends DefaultTask {
 
     private List<Search.Application> getExistingApplications() {
         return AppFilterHelper.filterBundle(
-            requestAPI.searchApplication(bundleId)?.Application,
+            api.searchApplication(bundleId)?.Application,
             airwatch.organizationGroupId
         )
     }
 
     private List<Integer> searchDevicesWith(Integer applicationId, DeviceStatus status) {
-        SearchDevice search = requestAPI.searchDevice(applicationId, status)
+        SearchDevice search = api.searchDevice(applicationId, status)
         def list = search?.DeviceId ?: [ ]
 
         println ""
@@ -90,7 +90,7 @@ class UninstallOlderTask extends DefaultTask {
     }
 
     private sendUninstall(Integer appId, Integer deviceId = null) {
-        if (requestAPI.uninstallAppFromDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
+        if (api.uninstallAppFromDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
             print "$deviceId "
         } else {
             print "$deviceId(FAILURE) "

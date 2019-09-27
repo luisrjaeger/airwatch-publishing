@@ -1,0 +1,15 @@
+name: Auto Versioning
+
+on: [push]
+#  push:
+#    paths:
+#     - 'src/main/groovy/br/com/luisrjaeger/airwatch/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Run increase version
+      run: gradle clean

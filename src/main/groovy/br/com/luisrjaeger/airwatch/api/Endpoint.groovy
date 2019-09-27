@@ -15,6 +15,6 @@ class Endpoint {
 
     static final String APPS_SEARCH = "${APPS}search?bundleid=%s&pagesize=10000"
 
-    static final String UPLOAD_BLOB = "${BLOBS}uploadblob?filename=%s"
+    static final String UPLOAD_BLOB = "${BLOBS}uploadblob?filename=%s&organizationgroupid=%d"
 
 }

@@ -1,6 +1,7 @@
 package br.com.luisrjaeger.airwatch.task
 
-import br.com.luisrjaeger.airwatch.api.ClientAPI
+import br.com.luisrjaeger.airwatch.api.AirwatchAPI
+import br.com.luisrjaeger.airwatch.api.Client
 import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
 
 import br.com.luisrjaeger.airwatch.model.Airwatch
@@ -24,7 +25,7 @@ class PublishTask extends DefaultTask {
 
     BeginInstall beginInstall
 
-    ClientAPI requestAPI
+    AirwatchAPI api
 
     PublishTask() { }
 
@@ -32,7 +33,7 @@ class PublishTask extends DefaultTask {
     def postToAirwatch() {
         airwatch.validateOptions()
 
-        requestAPI = new ClientAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
+        api = new AirwatchAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
 
         if (getExistingApplication()) throw new Exception("Bundle $bundleId version $version already present on AirWatch")
 
@@ -72,7 +73,7 @@ class PublishTask extends DefaultTask {
 
     private Integer postApk() {
         loadApkFile()
-        UploadBlob uploadBlob = requestAPI.sendApk(file)
+        UploadBlob uploadBlob = requestAPI.sendApk(file, airwatch.organizationGroupId)
 
         return uploadBlob.Value
     }

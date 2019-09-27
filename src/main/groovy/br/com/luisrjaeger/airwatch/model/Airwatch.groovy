@@ -20,7 +20,7 @@ class Airwatch {
 
     Boolean validateVersionOnPublishing = true
 
-    validateOptions() {
+    void validateOptions() {
         if (!applicationName) throw new Exception("airwatch.applicationName not defined and it's mandatory")
         if (!serverUrl) throw new Exception("airwatch.serverUrl not defined and it's mandatory")
         if (!apiKey) throw new Exception("airwatch.apiKey not defined and it's mandatory")
