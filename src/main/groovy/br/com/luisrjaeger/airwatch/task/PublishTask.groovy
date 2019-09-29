@@ -1,6 +1,6 @@
 package br.com.luisrjaeger.airwatch.task
 
-import br.com.luisrjaeger.airwatch.api.RequestAPI
+import br.com.luisrjaeger.airwatch.api.AirwatchAPI
 import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.BeginInstall
@@ -21,33 +21,35 @@ class PublishTask extends DefaultTask {
 
     String filePath
 
+    String fileName
+
     BeginInstall beginInstall
 
-    RequestAPI requestAPI
+    AirwatchAPI api
 
     PublishTask() { }
 
     @TaskAction
     def postToAirwatch() {
-        if (!airwatch.applicationName) throw new Exception("airwatch.applicationName not defined and it's mandatory")
-        if (!airwatch.serverUrl) throw new Exception("airwatch.serverUrl not defined and it's mandatory")
-        if (!airwatch.apiKey) throw new Exception("airwatch.apiKey not defined and it's mandatory")
-        if (!airwatch.userName) throw new Exception("airwatch.userName not defined and it's mandatory")
-        if (!airwatch.password) throw new Exception("airwatch.password not defined and it's mandatory")
+        airwatch.validateOptions()
 
-        requestAPI = new RequestAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
+        api = new AirwatchAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
 
-        if (getExistingApplication()) throw new Exception("Bundle $bundleId version $version already present on AirWatch")
+        //if (getExistingApplication()) throw new Exception("Bundle $bundleId version $version already present on AirWatch")
+        if (getExistingApplication()) {
+            println "Bundle $bundleId version $version already present on AirWatch"
+            return
+        }
 
         println "Sending APK - ${airwatch.applicationName}"
-        println "**********************"
+        separator()
 
         def blobId = postApk()
 
         if (!blobId) throw new Exception("Unable to get blobId")
 
         println "APK file $blobId sent!"
-        println "**********************"
+        separator()
 
         println "Saving application..."
 
@@ -55,8 +57,8 @@ class PublishTask extends DefaultTask {
 
         if (!id) throw new Exception("Unable to save application on Airwatch")
 
-        println "Application saved!"
-        println "**********************"
+        println "Application $id saved!"
+        separator()
     }
 
     private boolean getExistingApplication() {
@@ -64,10 +66,10 @@ class PublishTask extends DefaultTask {
         if (!airwatch.validateVersionOnPublishing) return false
 
         println "Searching Bundle - $bundleId - Version $version"
-        println "**********************"
+        separator()
 
         return AppFilterHelper.existVersion(
-            requestAPI.searchApplication(bundleId)?.Application,
+            api.searchApplication(bundleId)?.Application,
             version,
             airwatch.organizationGroupId
         )
@@ -75,7 +77,7 @@ class PublishTask extends DefaultTask {
 
     private Integer postApk() {
         loadApkFile()
-        UploadBlob uploadBlob = requestAPI.sendApk(file, airwatch.organizationGroupId)
+        UploadBlob uploadBlob = api.sendApk(file, airwatch.organizationGroupId)
 
         return uploadBlob.Value
     }
@@ -84,7 +86,7 @@ class PublishTask extends DefaultTask {
         beginInstall = loadBeginInstall()
         beginInstall.BlobId = blobId
 
-        RespBeginInstall rbi = requestAPI.saveApplication(beginInstall)
+        RespBeginInstall rbi = api.saveApplication(beginInstall)
 
         return rbi.Id.Value
     }
@@ -104,13 +106,22 @@ class PublishTask extends DefaultTask {
         println "File Path - ${filePath}"
 
         def directory = new File(filePath)
-        file = directory.listFiles().find {
-            it.name.contains(".apk")
+        def files = directory.listFiles()
+
+        separator()
+        println files
+        separator()
+
+        file = files.find {
+            it.name.contains(fileName) //it.name.contains(".apk")
         }
 
         if (file == null) throw new Exception("APK not Found")
-
         println "File name - ${file.name}"
+    }
+
+    private static void separator() {
+        println '**********************'
     }
 
 }

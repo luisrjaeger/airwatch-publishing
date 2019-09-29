@@ -2,22 +2,33 @@ package br.com.luisrjaeger.airwatch.model
 
 class Airwatch {
 
-    String serverUrl
+    public String serverUrl
 
-    String applicationName
+    public String applicationName
 
-    String filePath
+    public String filePath
 
-    String apiKey
+    public String fileName
 
-    String userName
+    public String apiKey
 
-    String password
+    public String userName
 
-    String pushMode = "Auto"
+    public String password
 
-    Integer organizationGroupId
+    public String pushMode = "Auto"
 
-    Boolean validateVersionOnPublishing = true
+    public Integer organizationGroupId
+
+    public Boolean validateVersionOnPublishing = true
+
+    void validateOptions() {
+        if (!applicationName) throw new Exception("airwatch.applicationName not defined and it's mandatory")
+        if (!serverUrl) throw new Exception("airwatch.serverUrl not defined and it's mandatory")
+        if (!apiKey) throw new Exception("airwatch.apiKey not defined and it's mandatory")
+        if (!userName) throw new Exception("airwatch.userName not defined and it's mandatory")
+        if (!password) throw new Exception("airwatch.password not defined and it's mandatory")
+        if (!organizationGroupId) throw new Exception("airwatch.organizationGroupId not defined and it's mandatory")
+    }
 
 }

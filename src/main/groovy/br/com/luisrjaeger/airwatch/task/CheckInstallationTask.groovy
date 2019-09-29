@@ -10,7 +10,7 @@ import br.com.luisrjaeger.airwatch.model.response.SearchDevice
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class ValidateInstallationTask extends DefaultTask {
+class CheckInstallationTask extends DefaultTask {
 
     Airwatch airwatch
 
@@ -20,10 +20,10 @@ class ValidateInstallationTask extends DefaultTask {
 
     AirwatchAPI api
 
-    ValidateInstallationTask() { }
+    CheckInstallationTask() { }
 
     @TaskAction
-    def validateInstallation() {
+    def checkInstallation() {
         airwatch.validateOptions()
 
         api = new AirwatchAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
@@ -36,11 +36,7 @@ class ValidateInstallationTask extends DefaultTask {
         println "${apps.size()} applications found!"
         println "**********************"
 
-        if (apps.isEmpty()) {
-            println "No application to install!"
-            println "**********************"
-            return
-        }
+        if (apps.isEmpty()) return
 
         for (def app : apps) {
             println "**********************"
@@ -56,22 +52,10 @@ class ValidateInstallationTask extends DefaultTask {
             if (devices.isEmpty()) {
                 println "No pending installation found for ${app.id}!"
                 println "**********************"
-                continue
             }
-
-            println ""
-            println "Starting installation..."
-            println ""
-
-            for (def deviceId : devices) {
-                sendInstallation(app.id, deviceId)
-            }
-
-            println ""
-            println "**********************"
         }
 
-        println "Validate installation succeeded!"
+        println "Check installation succeeded!"
         println "**********************"
     }
 

@@ -1,6 +1,6 @@
 package br.com.luisrjaeger.airwatch.task
 
-import br.com.luisrjaeger.airwatch.api.RequestAPI
+import br.com.luisrjaeger.airwatch.api.AirwatchAPI
 import br.com.luisrjaeger.airwatch.helper.AppFilterHelper
 import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.model.DeviceStatus
@@ -18,18 +18,15 @@ class UninstallOlderTask extends DefaultTask {
 
     String version
 
-    RequestAPI requestAPI
+    AirwatchAPI api
 
     UninstallOlderTask() { }
 
     @TaskAction
     def validateInstallation() {
-        if (!airwatch.serverUrl) throw new Exception("airwatch.serverUrl not defined and it's mandatory")
-        if (!airwatch.apiKey) throw new Exception("airwatch.apiKey not defined and it's mandatory")
-        if (!airwatch.userName) throw new Exception("airwatch.userName not defined and it's mandatory")
-        if (!airwatch.password) throw new Exception("airwatch.password not defined and it's mandatory")
+        airwatch.validateOptions()
 
-        requestAPI = new RequestAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
+        api = new AirwatchAPI(airwatch.serverUrl, airwatch.apiKey, airwatch.userName, airwatch.password)
 
         println "Searching Bundle - $bundleId - Keeping Version $version"
         println "**********************"
@@ -75,13 +72,13 @@ class UninstallOlderTask extends DefaultTask {
 
     private List<Search.Application> getExistingApplications() {
         return AppFilterHelper.filterBundle(
-            requestAPI.searchApplication(bundleId)?.Application,
+            api.searchApplication(bundleId)?.Application,
             airwatch.organizationGroupId
         )
     }
 
     private List<Integer> searchDevicesWith(Integer applicationId, DeviceStatus status) {
-        SearchDevice search = requestAPI.searchDevice(applicationId, status)
+        SearchDevice search = api.searchDevice(applicationId, status)
         def list = search?.DeviceId ?: [ ]
 
         println ""
@@ -93,7 +90,7 @@ class UninstallOlderTask extends DefaultTask {
     }
 
     private sendUninstall(Integer appId, Integer deviceId = null) {
-        if (requestAPI.uninstallAppFromDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
+        if (api.uninstallAppFromDevice(new InstallApplication(applicationId: appId, DeviceId: deviceId))) {
             print "$deviceId "
         } else {
             print "$deviceId(FAILURE) "

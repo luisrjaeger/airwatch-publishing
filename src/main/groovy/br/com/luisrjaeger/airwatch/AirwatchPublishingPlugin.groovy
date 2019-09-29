@@ -17,12 +17,14 @@ class AirwatchPublishingPlugin implements Plugin<Project> {
         if (!android) throw new Exception("This is not an Android project")
 
         android.applicationVariants.all { variant ->
-            variant.outputs.all {
+            variant.outputs.all { out ->
                 project.tasks.create("publish${variant.name.capitalize()}ToAirwatch", PublishTask) { task ->
                     //Workaround until Google fix outputFile deprecated api call
                     //task.filePath = extension.filePath ?: outputFile.absolutePath.replace(outputFile.name, "")
                     task.filePath = extension.filePath ?:
                         variant.getPackageApplicationProvider().get().outputs.files[1]
+
+                    task.fileName = extension.fileName ?: out.outputFileName
                     task.bundleId = variant.applicationId
                     task.version = android.defaultConfig.versionName
                     task.airwatch = extension
@@ -38,6 +40,15 @@ class AirwatchPublishingPlugin implements Plugin<Project> {
 
                     group 'publishing airwatch'
                     description "Validate ${variant.name} apk deployment on devices and force installation"
+                }
+
+                project.tasks.create("check${variant.name.capitalize()}Installation", ValidateInstallationTask) { task ->
+                    task.bundleId = variant.applicationId
+                    task.version = android.defaultConfig.versionName
+                    task.airwatch = extension
+
+                    group 'publishing airwatch'
+                    description "Check ${variant.name} apk installation count"
                 }
 
                 project.tasks.create("uninstallOlder${variant.name.capitalize()}", UninstallOlderTask) { task ->

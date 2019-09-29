@@ -12,8 +12,12 @@ class AppFilterHelper {
         return filterBundle(apps, groupId).findAll { it.AppVersion == version }
     }
 
+    static Search.Application getVersion(List<Search.Application> apps, String version, Integer groupId) {
+        return filterVersion(apps, version, groupId)?.first()
+    }
+
     static boolean existVersion(List<Search.Application> apps, String version, Integer groupId) {
-        return apps?.any { it.AppVersion == version && it.LocationGroupId == groupId } ?: [ ]
+        return apps?.any { it.AppVersion == version && it.LocationGroupId == groupId } ?: false
     }
 
 }
