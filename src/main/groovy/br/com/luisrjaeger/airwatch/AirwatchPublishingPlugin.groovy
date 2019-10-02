@@ -42,7 +42,7 @@ class AirwatchPublishingPlugin implements Plugin<Project> {
                     description "Validate ${variant.name} apk deployment on devices and force installation"
                 }
 
-                project.tasks.create("check${variant.name.capitalize()}Installation", ValidateInstallationTask) { task ->
+                project.tasks.create("check${variant.name.capitalize()}Installation", CheckInstallationTask) { task ->
                     task.bundleId = variant.applicationId
                     task.version = android.defaultConfig.versionName
                     task.airwatch = extension
