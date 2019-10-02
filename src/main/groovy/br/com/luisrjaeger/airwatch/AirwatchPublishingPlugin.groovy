@@ -4,6 +4,7 @@ import br.com.luisrjaeger.airwatch.model.Airwatch
 import br.com.luisrjaeger.airwatch.task.PublishTask
 import br.com.luisrjaeger.airwatch.task.UninstallOlderTask
 import br.com.luisrjaeger.airwatch.task.ValidateInstallationTask
+import br.com.luisrjaeger.airwatch.task.CheckInstallationTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
