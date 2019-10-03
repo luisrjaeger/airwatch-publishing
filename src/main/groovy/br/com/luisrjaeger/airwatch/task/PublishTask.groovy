@@ -109,11 +109,12 @@ class PublishTask extends DefaultTask {
         def files = directory.listFiles()
 
         separator()
+        println fileName
         println files
         separator()
 
         file = files.find {
-            it.name.contains(fileName) //it.name.contains(".apk")
+            /*it.name.contains(fileName)*/it.name.contains(".apk")
         }
 
         if (file == null) throw new Exception("APK not Found")
