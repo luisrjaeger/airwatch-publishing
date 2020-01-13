@@ -1,5 +1,6 @@
 # airwatch-publishing
-Airwatch plugin for Gradle
+Gradle plugin to publish Android apks to Airwatch Console API
+https://plugins.gradle.org/plugin/luisrjaeger.airwatch-publishing
 
 # Usage
 Airwatch plugin for Gradle to upload and deploy Android apks on Airwatch Console API.
